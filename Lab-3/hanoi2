@@ -1,0 +1,40 @@
+#include<stdio.h>
+struct Stack{
+    int disk; char from; char to; char aux; int state;
+};
+int main(){
+    int n,top=-1;
+    struct Stack stack[100];
+    printf("Enter number of disks: ");
+    scanf("%d",&n);
+    stack[++top]=(struct Stack){n,'A','C','B',0};
+    while(top>=0){
+    struct Stack*current=&stack[top];
+        if(current->disk==1){
+            printf("Move disk 1 from %c to %c\n",current->from,current->to);
+            top--;
+        }else if(current->state==0){
+            current->state=1;
+            stack[++top]=(struct Stack){
+                current->disk-1,
+                current->from,
+                current->aux,
+                current->to,
+                0
+            };
+        }else{
+            printf("Move disk %d from %c to %c\n",
+                   current->disk,
+                   current->from,
+                   current->to);
+            current->state=2;
+            stack[++top]=(struct Stack){
+                current->disk-1,
+                current->aux,
+                current->to,
+                current->from,
+                0 };
+    }
+}
+    return 0;
+}
