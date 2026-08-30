@@ -1,0 +1,32 @@
+#include<stdio.h>
+#define size 100
+int main(){
+    int arr[size],hash[size];
+    int n,T,i,index,complement;
+    for(i=0;i<size;i++)
+        hash[i]=-1;
+    printf("Enter number of elements: ");
+    scanf("%d",&n);
+    printf("Enter elements:\n");
+    for(i=0;i<n;i++)
+        scanf("%d",&arr[i]);
+    printf("Enter target T: ");
+    scanf("%d",&T);
+    for(i=0;i<n;i++){
+        complement=T-arr[i];
+        index=complement%size;
+        if(index<0)
+            index=index+size;
+        if(hash[index]==complement){
+            printf("Yes, pair found: %d+%d=%d\n",
+                   complement,arr[i],T);
+            return 0;
+        }
+        index=arr[i]%size;
+        if(index<0)
+            index=index+size;
+        hash[index]=arr[i];
+    }
+    printf("No pair found\n");
+    return 0;
+}
