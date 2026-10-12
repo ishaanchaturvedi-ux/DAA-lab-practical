@@ -1,0 +1,81 @@
+#include<stdio.h>
+#include<stdlib.h>
+struct Node{
+    char ch;
+    int freq;
+    struct Node *left, *right;
+};
+struct Node* createNode(char ch, int freq){
+    struct Node* node=malloc(sizeof(struct Node));
+    node->ch=ch;
+    node->freq=freq;
+    node->left=node->right=NULL;
+    return node;
+}
+int totalBits=0;
+void printCodes(struct Node* root, int code[], int top) {
+    if (root==NULL)
+        return;
+    if (root->left==NULL&&root->right==NULL){
+        printf("%c\t%d\t",root->ch,root->freq);
+        for(int i=0;i<top;i++)
+            printf("%d",code[i]);
+        printf("\t%d\n",top);
+        totalBits+=root->freq*100*top;
+        return;
+    }
+    code[top]=0;
+    printCodes(root->left,code,top+1);
+    code[top]=1;
+    printCodes(root->right,code,top+1);
+}
+int main(){
+    char ch[]={'a','c','d','e','o','m','s','t','u'};
+    int freq[]={20,11,2,10,15,8,10,22,2};
+    int n=9;
+    struct Node* nodes[20];
+    int code[20];
+    for(int i=0;i<n;i++)
+        nodes[i]=createNode(ch[i],freq[i]);
+    printf("Huffman Tree Construction:\n");
+    int step=1;
+    while(n>1){
+        int min1=0,min2=1;
+        if (nodes[min1]->freq>nodes[min2]->freq){
+            int temp=min1;
+            min1=min2;
+            min2=temp;
+        }
+        for(int i=2;i<n;i++){
+            if(nodes[i]->freq<nodes[min1]->freq){
+                min2=min1;
+                min1=i;
+            }else if(nodes[i]->freq<nodes[min2]->freq){
+                min2=i;
+            }
+        }
+        int f1=nodes[min1]->freq;
+        int f2=nodes[min2]->freq;
+        struct Node* parent=createNode('$',f1+f2);
+        parent->left=nodes[min1];
+        parent->right=nodes[min2];
+        printf("Step %d:%d+%d=%d\n",step++,f1,f2,f1+f2);
+        if (min1>min2){
+            int temp=min1;
+            min1=min2;
+            min2=temp;
+        }
+        nodes[min2]=nodes[n-1];
+        nodes[min1]=parent;
+        n--;
+    }
+    printf("\nCharacter\tFrequency\tCode\tLength\n");
+    printCodes(nodes[0],code,0);
+    printf("\nTotal Bits = %d\n", totalBits);
+    printf("Memory Required = %.2f bytes\n",totalBits / 8.0);
+    int originalBits=10000*8;
+    printf("Original Memory = %d bytes\n", originalBits/8);
+    printf("Compression = %.2f%%\n",
+           (1.0-(double)totalBits/originalBits)*100);
+    return 0;
+}
